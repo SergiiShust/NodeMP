@@ -5,11 +5,7 @@ class DirWatcher extends EventEmitter {
     dirChangeEventName = 'dirwatcher:changed'
 
     watch(path, delay) {
-        this.path && fs.unwatchFile(this.path);
-        this.path = path;
-        this.delay = delay;
         this.isChanged = false;
-        clearInterval(this.intervalHandler);
 
         fs.watch(path, (eventType, fileName) => {
             console.log(eventType, fileName);
@@ -20,7 +16,7 @@ class DirWatcher extends EventEmitter {
     }
 
     watchForChange(delay) {
-        this.intervalHandler = setInterval(() => {
+       setInterval(() => {
             if (this.isChanged) {
                 this.emit(this.dirChangeEventName);
                 this.isChanged = false;

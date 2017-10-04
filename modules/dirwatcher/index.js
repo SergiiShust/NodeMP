@@ -2,7 +2,7 @@ const EventEmitter = require('events');
 const fs = require('fs');
 
 class DirWatcher extends EventEmitter {
-    dirChangeEventName = 'dirwatcher:changed'
+    dirChangeEventName = 'dirwatcher:changed';
 
     watch(path, delay) {
         this.isChanged = false;

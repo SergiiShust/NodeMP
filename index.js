@@ -7,7 +7,7 @@ console.log('App name: ', config.name);
 //let product = new models.Product();
 
 let dirwatcher = new DirWatcher();
-dirwatcher.watch('./data', 200)
+dirwatcher.watch('./data', 200);
 dirwatcher.on(dirwatcher.dirChangeEventName, (filename) => {
     console.log(dirwatcher.dirChangeEventName);
 });

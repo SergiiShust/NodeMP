@@ -3,25 +3,53 @@ const fs = require('fs');
 
 class DirWatcher extends EventEmitter {
     dirChangeEventName = 'dirwatcher:changed';
+    releaseDataPeriod = 1000/* one second*/ * 20 /* seconds*/;
+    changedFiles = [];
 
     watch(path, delay) {
-        this.isChanged = false;
-
         fs.watch(path, (eventType, fileName) => {
             console.log(eventType, fileName);
-            this.isChanged = true;
-        });
 
-        this.watchForChange(this.delay);
+            if (this.changedFiles.indexOf(fileName) == -1) {
+                this.changedFiles.push(fileName);
+
+                this.delayChangeEvent(delay, () => { this.emitChangedFiles() });
+                this.setReleasePeriodHandler(() => { this.emitChangedFiles() });
+            }
+        });
     }
 
-    watchForChange(delay) {
-       setInterval(() => {
-            if (this.isChanged) {
-                this.emit(this.dirChangeEventName);
-                this.isChanged = false;
-            }
+    delayChangeEvent(delay, cb) {
+        clearTimeout(this.intervalHandler);
+        this.intervalHandler = setTimeout(() => {
+            console.log('IntervalHandler Emit: ', this.dirChangeEventName);
+            this.clearHandlers();
+
+            cb();
         }, delay);
+    }
+
+    setReleasePeriodHandler(cb) {
+        if (this.releaseDataPeriodHandler) {
+            return;
+        }
+
+        this.releaseDataPeriodHandler = setTimeout(() => {
+            console.log('ReleaseDataPeriod Emit: ', this.dirChangeEventName);
+            this.clearHandlers();
+
+            cb();
+        }, this.releaseDataPeriod);
+    }
+
+    emitChangedFiles() {
+        this.emit(this.dirChangeEventName, this.changedFiles.slice());
+        this.changedFiles = [];
+    }
+
+    clearHandlers() {
+        clearTimeout(this.intervalHandler);
+        clearTimeout(this.releaseDataPeriodHandler);
     }
 }
 

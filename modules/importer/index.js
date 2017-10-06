@@ -1,10 +1,9 @@
 class Importer {
-    //dirwatcher:changed
-    constructor(dirWatcher){
-
+    constructor(dirwatcher) {
+        dirwatcher.on(dirwatcher.dirChangeEventName, (filenames) => {
+            console.log(JSON.stringify(filenames));
+        });
     }
-    import(path) { }
-    importSync(path) { }
 }
 
 module.exports = Importer;

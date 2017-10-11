@@ -1,3 +1,6 @@
+const fs = require('fs');
+var csvjson = require('csvjson');
+
 class Importer {
     constructor(dirwatcher) {
         dirwatcher.on(dirwatcher.dirChangeEventName, (filenames) => {
@@ -6,25 +9,17 @@ class Importer {
     }
 
     import(path) {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path, (err, data) => {
-                if (err) reject(err);
-                resolve(data);
-            });
-        });
-    }
-
-    import(path) {
         const files = fs.readdirSync(path);
         const promises = files.map((value) => {
-            new Promise((resolve, reject) => {
-                fs.readFile(path, (err, data) => {
+           return new Promise((resolve, reject) => {
+                fs.readFile(path + '/' + value, { encoding: 'utf8' }, (err, data) => {
                     if (err) reject(err);
-                    resolve(data);
+                    var json = csvjson.toObject(data);
+                    resolve(json);
                 });
             })
         })
-        
+
         return Promise.all(promises);
     }
 
@@ -33,7 +28,9 @@ class Importer {
         const files = fs.readdirSync(path);
         var results = [];
         files.map((value) => {
-            results[value] = fs.readFileSync(path + value);
+            var fileContent = fs.readFileSync(path + '/' + value, { encoding: 'utf8' });
+            var json = csvjson.toObject(fileContent);
+            results[value] = json;
         });
 
         return results;

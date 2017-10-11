@@ -12,3 +12,13 @@ let dirwatcher = new DirWatcher();
 let importer = new Importer(dirwatcher);
 dirwatcher.watch('./data', 1000 * 10);
 
+var data = importer.importSync('./data');
+
+setTimeout(() => {
+    var data = importer.import('./data').then((data) => {
+        console.log(data, 1);
+    })
+}, 10000)
+
+console.log(data, 2);
+
